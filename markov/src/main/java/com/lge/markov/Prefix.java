@@ -1,6 +1,8 @@
 package com.lge.markov;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -9,7 +11,7 @@ import java.util.List;
  */
 public class Prefix {
 
-    private List<String> prefix = new ArrayList<String>();
+    final List<String> prefix;
 
     /**
      * Creates a new prefix instance with n-repeated words.
@@ -18,9 +20,7 @@ public class Prefix {
      * @param word
      */
     public Prefix(int n, String word) {
-        for (int i = 0; i < n; i++) {
-            prefix.add(word);
-        }
+        prefix = Collections.nCopies(n, word);
     }
 
     /**
@@ -29,8 +29,34 @@ public class Prefix {
      * @param other
      */
     public Prefix(Prefix other) {
-        prefix.addAll(other.prefix);
+        prefix = other.prefix;
     }
 
-    // TODO Add methods here if necessary
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Prefix prefix1 = (Prefix) o;
+
+        return Arrays.deepEquals(prefix.toArray(), prefix1.prefix.toArray());
+
+    }
+
+    @Override
+    public int hashCode() {
+        return Arrays.deepHashCode(prefix.toArray());
+    }
+
+    public Prefix(Prefix other, String word) {
+        List<String> before = new ArrayList<>(other.prefix);
+        before.remove(0);
+        before.add(word);
+        prefix = Collections.unmodifiableList(before);
+    }
+
+    @Override
+    public String toString() {
+        return Arrays.deepToString(prefix.toArray());
+    }
 }

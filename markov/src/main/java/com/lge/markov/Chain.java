@@ -1,13 +1,13 @@
 package com.lge.markov;
 
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.Random;
-import java.util.Scanner;
-
 import com.lge.markov.util.FixedColumnPrinter;
 import com.lge.markov.util.TablePrinter;
 import com.lge.markov.util.WordPrinter;
+
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.*;
+import java.util.stream.Stream;
 
 /**
  * Main Class for Markov Chain Algorithm. It keeps a database to generate a random text according to
@@ -30,7 +30,7 @@ public class Chain {
 
     final Random rand = new Random(0); // fixed a seed to generate identical text at every runs
 
-    // TODO Add fields here if necessary
+    Map<Prefix, Set<String>> suffixMap = new HashMap<>();
 
     /**
      * Updates database by learning provided inputStream.
@@ -42,11 +42,20 @@ public class Chain {
         Scanner scanner = new Scanner(inputStream);
         while (scanner.hasNext()) {
             String word = scanner.next();
-            // TODO using each word, update the prefix-suffix map
-            System.out.println(word); // DELETE ME
+            addSuffix(prefix, word);
+            prefix = new Prefix(prefix, word);
         }
-        // TODO add END_OF_TEXT here to stop generating properly
+        addSuffix(prefix, END_OF_TEXT);
         scanner.close();
+    }
+
+    private void addSuffix(Prefix prefix, String suffix) {
+        Set<String> suffices = suffixMap.get(prefix);
+        if (null == suffices) {
+            suffices = new HashSet<>();
+            suffixMap.put(prefix, suffices);
+        }
+        suffices.add(suffix);
     }
 
     /**
@@ -55,8 +64,7 @@ public class Chain {
      * @return
      */
     public int getWordCount() {
-        // TODO return the number of words in database
-        return 1;
+        return suffixMap.size();
     }
 
     /**
@@ -65,23 +73,23 @@ public class Chain {
      * @param printer
      */
     public void printDatabase(TablePrinter printer) {
-        // TODO set column width according to the longest prefix
-        // TablePrinter usage:
-        // printer.setColumnWidths(new int[]{ ... })
-        // printer.printRow(...)
-        System.out.println("Following table is sample. Delete it.");
-        printer.setColumnWidths(new int[] { 10, 10 });
-        for (String[] row : new String[][] { { "Column A", "Column B" }, { "A", "B" },
-                { "AAAAA", "BBB" } }) {
-            printer.printRow(row[0], row[1]);
+        int prefixWidth = maxLengthSum(suffixMap.keySet().stream().map(prefix -> prefix.prefix));
+        int suffixWidth = maxLengthSum(suffixMap.values().stream());
+        printer.setColumnWidths(new int[]{prefixWidth, suffixWidth});
+        for (Map.Entry<Prefix, Set<String>> entry: suffixMap.entrySet()) {
+            printer.printRow(entry.getKey(), Arrays.deepToString(entry.getValue().toArray()));
         }
+    }
+
+    private int maxLengthSum(Stream<? extends Collection<String>> l) {
+        return l.mapToInt(wordList -> wordList.stream().mapToInt((word) -> word.length() + 2).sum()).max().getAsInt();
     }
 
     /**
      * Clear all data previously learned.
      */
     public void reset() {
-        // TODO clear the database
+        suffixMap.clear();
     }
 
     /**
@@ -93,13 +101,15 @@ public class Chain {
      */
     public void generate(int maxLength, WordPrinter printer) {
         Prefix prefix = new Prefix(BEGIN_OF_TEXT);
-        // TODO generate randomly selected suffix using current prefix
-        // stop when the maxLength limit is hit or END_OF_TEXT is selected.
-        // Use WordPrinter.print(word) to generate text.
-        
-        // DELETE ME
-        printer.print("Hello");
-        printer.print("World");
+        while (0 < --maxLength) {
+            Set<String> suffices = suffixMap.get(prefix);
+            String word = suffices.stream().skip(rand.nextInt(suffices.size())).findFirst().get();
+            if (END_OF_TEXT.equals(word)) {
+                break;
+            }
+            printer.print(word);
+            prefix = new Prefix(prefix, word);
+        }
     }
 
     /**
@@ -112,5 +122,4 @@ public class Chain {
         generate(DEFAULT_GENERATE_LIMIT, new FixedColumnPrinter(outputStream, DEFAULT_SCREEN_WIDTH));
     }
 
-    // TODO Add helper methods here if necessary
 }

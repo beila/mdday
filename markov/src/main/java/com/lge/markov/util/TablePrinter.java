@@ -45,7 +45,6 @@ public class TablePrinter {
             } else {
                 pw.print(cell);
             }
-            i++;
         }
         pw.println();
         pw.flush();
