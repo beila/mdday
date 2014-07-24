@@ -3,3 +3,5 @@ include 'trail'
 
 include 'markov'
 
+include 'githubExplorer'
+

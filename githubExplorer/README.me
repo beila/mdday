@@ -1,0 +1,129 @@
+http://collab.lge.com/main/pages/viewpage.action?pageId=250062708
+
+
+
+Introduction
+다음과 같은 GitHubApi 인터페이스를 이용하여 GitHub 정보를 검색하는 프로그램을 작성한다.
+
+public interface GitHubApi {
+    /**
+     * Retrieves the list of contributors of a GitHub project.
+     * @param projectName
+     * @param callback
+     */
+    void getContributors(String projectName, Callback<List<Contributor>> callback);
+    /**
+     * Retrieves the list of projects starred by a user.
+     * @param userName
+     * @param callback
+     */
+    void getStarredProjects(String userName, Callback<List<Project>> callback);
+    /**
+     * Retrieves the list of all projects hosted on GitHub.
+     * @param callback
+     */
+    void getProjects(Callback<List<Project>> callback);
+}
+
+
+
+
+
+요구사항
+MainApp.java의 세가지 메소드를 구현한다.
+
+1.printAllProjects() 는 GitHub의 모든 프로젝트 목록을 정렬(오름차순)하여 보여준다.
+
+
+2.printContributorsOfProject(projectName) 는 projectName으로 지정된 프로젝트의 Contributor를 정렬(contribution내림, name오름)하여 보여준다.
+
+
+3.printFavoriteProjectsOfContributorsOfProject(projectName) 는 projctName으로 지정된 프로젝트의 Contributor들이 각각 star(관심등록)를 지정한 프로젝트들을 정렬(Contributor들의 star개수 내림, name오름)하여 보여준다.
+
+
+위 세 메소드는 아래의 요구사항을 추가로 만족해야 한다.
+1.결과는 Logger.print(string) 메소드로 출력해야 한다.
+2.전체 실행 시간은 500ms 이내여야 한다.
+
+동작 및 출력 방식은 Sample Run을 참고한다.
+
+Sample Run
+Base code 의 실행결과
+
+
+PRNT-main-[ 0.004] ===== All projects in GitHub
+PRNT-main-[ 0.035] ===== Contributors of lge/g3
+PRNT-main-[ 0.035] #COMMIT NAME
+PRNT-main-[ 0.035] ===== Favorite projects of contributors of lge/g3
+PRNT-main-[ 0.035] #STAR NAME
+INFO-Thread-1-[ 0.102] project list:[lge/g3, lge/g2, lge/g, lge/optimus, lge/roboking, lge/whisen, lge/tromm, lge/dios, lge/gwatch, lge/webos, google/nexus, google/android, google/wear, google/glass, google/polymer, google/chrome, google/gmail, google/esspresso, motorola/360]
+
+
+모두 구현한 다음의 실행결과
+
+
+===== All projects in GitHub
+google/android
+google/chrome
+google/esspresso
+google/glass
+google/gmail
+google/nexus
+google/polymer
+google/wear
+lge/dios
+lge/g
+lge/g2
+lge/g3
+lge/gwatch
+lge/optimus
+lge/roboking
+lge/tromm
+lge/webos
+lge/whisen
+motorola/360
+===== Contributors of lge/g3
+#COMMIT NAME
+18 jyp
+8 birm
+7 facil
+5 euna
+4 byul
+3 jjun
+2 bang
+2 daniel
+2 ok
+===== Favorite projects of contributors of lge/g3
+#STAR NAME
+6 lge/optimus
+5 lge/roboking
+5 lge/tromm
+4 google/glass
+4 google/nexus
+3 google/android
+3 google/esspresso
+3 google/gmail
+3 google/polymer
+3 lge/gwatch
+3 lge/webos
+3 lge/whisen
+3 motorola/360
+2 google/chrome
+2 google/wear
+2 lge/g
+2 lge/g2
+2 lge/g3
+1 lge/dios
+
+
+
+
+
+모범답안 GitHubAsync.zip
+
+베이스코드 GitHubAsync-base.zip
+
+
+
+
+.
