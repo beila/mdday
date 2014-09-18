@@ -9,11 +9,13 @@ public class Ball extends Circle {
 
     private static final int WHOLE_TIME = 1000;
     private static final int STEP_TIME = 30;
+    private final Interpolator interpolator;
 
-    public Ball(double x, double y) {
-        super(10, Color.web("white", 1));
+    public Ball(Color color, double x, double y, Interpolator interpolator) {
+        super(10, color);
         setCenterX(x);
         setCenterY(y);
+        this.interpolator = interpolator;
     }
 
     Timer timer = new Timer(true);
@@ -25,8 +27,8 @@ public class Ball extends Circle {
         int step = 0;
 
         public MovementTask(double x1, double y1, double x2, double y2) {
-            xSeries = new LinearInterpolator().getPoints(x1, x2, STEPS);
-            ySeries = new LinearInterpolator().getPoints(y1, y2, STEPS);
+            xSeries = interpolator.getPoints(x1, x2, STEPS);
+            ySeries = interpolator.getPoints(y1, y2, STEPS);
         }
 
         @Override
@@ -48,15 +50,4 @@ public class Ball extends Circle {
         timer.scheduleAtFixedRate(new MovementTask(getCenterX(), getCenterY(), x, y), 0, STEP_TIME);
     }
 
-    static class LinearInterpolator {
-        public double[] getPoints(double start, double end, int steps) {
-            double[] series = new double[steps];
-            double xDelta = (end - start) / steps;
-            for(int i = 0; i < series.length; ++i) {
-                series[i] = start + xDelta * i;
-            }
-            series[series.length - 1] = end;
-            return series;
-        }
-    }
 }

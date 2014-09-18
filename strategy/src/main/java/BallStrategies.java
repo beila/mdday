@@ -36,15 +36,22 @@ public class BallStrategies extends Application {
 
         addGradientBackground(root, scene);
 
-        addBalls(NUM_BALLS);
+        addBalls();
 
         scene.addEventFilter(MouseEvent.MOUSE_PRESSED, pressHandler);
         primaryStage.show();
     }
 
-    private void addBalls(int i) {
-        for (; i > 0; --i) {
-            root.getChildren().add(new Ball(Math.random() * WIDTH, Math.random() * HEIGHT));
+    private void addBalls() {
+        Color color[] = new Color[] {
+                Color.web("white", 1),
+                Color.web("orange", 1),
+                Color.web("red", 1),
+                Color.web("black", 1),
+        };
+        for (int i = 0; i < NUM_BALLS; ++i) {
+            root.getChildren().add(
+                    new Ball(color[i], Math.random() * WIDTH, Math.random() * HEIGHT, new LinearInterpolator()));
         }
     }
 
