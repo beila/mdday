@@ -1,6 +1,9 @@
-import javafx.concurrent.Task;
+import javafx.application.Platform;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class Ball extends Circle {
 
@@ -10,11 +13,11 @@ public class Ball extends Circle {
         setCenterY(y);
     }
 
-    Task<Void> movementTask = new MovementTask(0, 0);
+    Timer timer = new Timer(true);
 
-    class MovementTask extends Task<Void> {
-        private final double x;
-        private final double y;
+    class MovementTask extends TimerTask {
+        private double x;
+        private double y;
 
         public MovementTask(double x, double y) {
             this.x = x;
@@ -22,24 +25,17 @@ public class Ball extends Circle {
         }
 
         @Override
-        protected void succeeded() {
-            super.succeeded();
-            setCenterX(x);
-            setCenterY(y);
-        }
-
-        @Override
-        protected Void call() throws Exception {
-            Thread.sleep(1000);
-            return null;
+        public void run() {
+            Platform.runLater(() -> {
+                setCenterX(x);
+                setCenterY(y);
+            });
         }
     }
 
     public void move(double x, double y) {
-        movementTask.cancel();
-        movementTask = new MovementTask(x, y);
-        Thread t = new Thread(movementTask);
-        t.setDaemon(true);
-        t.start();
+        timer.cancel();
+        timer = new Timer(true);
+        timer.scheduleAtFixedRate(new MovementTask(x, y), 30, 30);
     }
 }
