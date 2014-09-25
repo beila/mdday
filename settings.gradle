@@ -7,3 +7,5 @@ include 'githubExplorer'
 
 include 'strategy'
 
+include 'command'
+
